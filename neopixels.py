@@ -95,7 +95,7 @@ while True:
     if getEntryID(data) > lastID:   #Has this entry_id been processed before?
         parseColour(data)
         showColour(pixels[0])
-        time.sleep(refresh)
+        time.sleep(5)
         showPixels()
     else:
         time.sleep(refresh)
