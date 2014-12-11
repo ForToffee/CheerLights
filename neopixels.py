@@ -30,7 +30,7 @@ def clean_shutdown():
   Registered at exit to ensure ws2812 cleans up after itself
   and all pixels are turned off.
   '''
-  off()
+  showColour([0, 0, 0])
   ws2812.terminate(0)
 
 atexit.register(clean_shutdown)
@@ -49,24 +49,34 @@ def getJSON(url):
 #update the last entry_id processed
 def parseColour(feedItem):
     global lastID
+    global pixels
     #print feed["created_at"], feed["field1"]
     for name in namesToRGB.keys():
         if feedItem["field1"] == name:
-            pixels.insert(0, namesToRGB(name)    #add the colour to the head
-    lastID = getEntryID(feed)
+            pixels.insert(0, namesToRGB[name])    #add the colour to the head
+
+    lastID = getEntryID(feedItem)
 
 #read the last entry_id
 def getEntryID(feedItem):
     return int(feedItem["entry_id"])
 
 #refresh the displayed pixels
-def showColours():
+def showPixels():
+    global pixels
     index = 0
     for pixel in pixels:
         ws2812.setPixelColor(index, pixel[0], pixel[1], pixel[2])
         index += 1
         if index >= maxPixels:
-            pixels = pixels[maxPixels-1]    #trim the list as we've maxed out
+            #print index, maxPixels
+            pixels = pixels[:maxPixels-1]    #trim the list as we've maxed out
+    ws2812.show()
+
+#show all pixels one colour
+def showColour(c):
+    for x in range(maxPixels):
+        ws2812.setPixelColor(x, c[0], c[1], c[2])
     ws2812.show()
                   
 #main program
@@ -76,7 +86,7 @@ ws2812.init(maxPixels)
 data = getJSON("feed.json")
 for feedItem in data["feeds"]:
     parseColour(feedItem)
-showColours()
+showPixels()
 
 #check for new colour requests
 while True:
@@ -84,6 +94,9 @@ while True:
     
     if getEntryID(data) > lastID:   #Has this entry_id been processed before?
         parseColour(data)
-        showColours()
-    time.sleep(refresh)
+        showColour(pixels[0])
+        time.sleep(refresh)
+        showPixels()
+    else:
+        time.sleep(refresh)
 
