@@ -3,13 +3,13 @@ CheerLights
 
 console.py
 ----------
-Outputs current colour to the console
+Outputs currently available colours to the console then adds new colour when available
 
 neopixel.py
 -----------
-Outputs the last colours to attached NeoPixels via ws2812 library
+Outputs the latest colours to attached NeoPixels via ws2812 library.  When a new colour is received all pixels show the colour briefly, then return to latest colours
+
+The ws2812 library is from https://github.com/pimoroni/UnicornHat
 
 todo:
-- test
 - finish documenting :-)
-- add all neopixel support for latest colour only
